@@ -1,6 +1,5 @@
-# Requisitos principais do projeto
 fastapi==0.111.0
-uvicorn[standard]==0.30.1
+uvicorn[standard]
 playwright==1.52.0
 beautifulsoup4==4.13.4
 pydantic==2.7.1
@@ -10,12 +9,22 @@ typing_extensions==4.13.2
 greenlet==3.2.2
 soupsieve==2.7
 
-# Se for usar o scheduler do Estagiário
+# banco de dados
+sqlalchemy==2.0.30
+aiomysql==0.2.0
+
+# testes
+pytest==8.2.1
+pytest-asyncio==0.26.0
+
+# opcional para scheduler
 APScheduler==3.11.0
 tzdata==2025.2
 tzlocal==5.3.1
 
-# Se for ativar futuramente o bot Telegram do Estagiário
+# opcional para telegram bot
 python-telegram-bot==22.0
 pyee==13.0.0
 requests==2.32.3
+
+pydantic-settings==2.2.1
