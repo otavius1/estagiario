@@ -1,43 +1,38 @@
-# main.py
-
-from bot.navegador import abrir_site, consultar_processo
-from bot.scraper import extrair_andamentos
+import sys
+import asyncio
+import json
 from bot.utils import formatar_numero_processo
+from bot.scraper import extrair_andamentos, extrair_dados_processo
 from bot.relatorio import gerar_html
+from bot.navegador import abrir_site, consultar_processo
 
-def main():
-    numero_puro = input("Digite o número do processo (apenas números, sem traços/pontos): ")
-    numero_formatado = formatar_numero_processo(numero_puro)
-    print(f"Consultando processo: {numero_formatado}")
+async def main():
+    if len(sys.argv) != 2:
+        print(json.dumps({"status": "erro", "detalhe": "Uso: python main.py <numero_processo>"}))
+        return
 
-    page = abrir_site()
-    nova_aba = consultar_processo(page, numero_formatado)
+    numero = sys.argv[1]
+    numero_formatado = formatar_numero_processo(numero)
 
-    andamentos = extrair_andamentos(nova_aba)
+    playwright, browser, page = await abrir_site()
+    try:
+        nova_aba = await consultar_processo(page, numero_formatado)
+        html_content = await nova_aba.content()
 
-    print("\nAndamentos encontrados:")
-    for andamento in andamentos:
-        print(f"{andamento['data']} - {andamento['evento']}")
+        dados = extrair_dados_processo(html_content)
+        dados['numero'] = numero_formatado
+        andamentos = extrair_andamentos(html_content)
+        relatorio_html = gerar_html(dados, andamentos)
 
-    # 💡 MOCK: dados_processo provisórios para gerar HTML
-    dados_processo = {
-        'numero': numero_formatado,
-        'classe': 'Ação Penal - Procedimento Ordinário',
-        'assunto': 'Crimes Previstos no Estatuto do Idoso',
-        'vara': '5ª Vara Criminal de Brasília',
-        'partes': [
-            'MINISTÉRIO PÚBLICO DO DF E DOS TERRITÓRIOS',
-            'FRANCIANA APARECIDA ALMEIDA XAVIER (Réu)',
-            'Advogados: Ricardo Souza, Tayana Barros'
-        ]
-    }
-
-    html = gerar_html(dados_processo, andamentos)
-    print("\nHTML GERADO PARA ENVIO:")
-    print(html)
+        print(json.dumps({
+            "numero": numero_formatado,
+            "relatorio_html": relatorio_html
+        }))
+    except Exception as e:
+        print(json.dumps({"status": "erro", "detalhe": str(e)}))
+    finally:
+        await browser.close()
+        await playwright.stop()
 
 if __name__ == "__main__":
-    main()
-
-    
-# 0716108-14.2021.8.07.0016
+    asyncio.run(main())

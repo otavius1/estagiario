@@ -5,7 +5,6 @@ import os
 from fastapi import HTTPException
 from dotenv import load_dotenv
 
-# Carregar variáveis do .env
 load_dotenv()
 
 USE_SUBPROCESS = os.getenv("USE_SUBPROCESS", "True").lower() == "true"
@@ -21,13 +20,12 @@ async def consultar_processo_api_service(numero_processo: str):
         raise HTTPException(status_code=400, detail="Número do processo inválido. Envie apenas números.")
 
     if USE_SUBPROCESS:
-        # Modo subprocess (Windows seguro)
         try:
             result = subprocess.run(
-                [sys.executable, "meubot.py", numero_processo],
+                [sys.executable, "main.py", numero_processo],
                 capture_output=True,
                 text=True,
-                timeout=120  # evita travar para sempre
+                timeout=120 
             )
         except subprocess.TimeoutExpired:
             raise HTTPException(status_code=504, detail="Timeout ao executar subprocesso do bot.")
@@ -43,7 +41,6 @@ async def consultar_processo_api_service(numero_processo: str):
             raise HTTPException(status_code=500, detail="Falha ao decodificar JSON do subprocesso.")
         
     else:
-        # Modo nativo (Linux direto)
         numero_formatado = formatar_numero_processo(numero_processo)
         try:
             playwright, browser, page = await abrir_site()

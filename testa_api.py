@@ -11,7 +11,7 @@ print(response.text)
 if response.status_code == 200:
     data = response.json()
     if "relatorio_html" in data:
-        # Cria pasta data se não existir
+        
         os.makedirs("data", exist_ok=True)
         caminho_arquivo = f"data/{numero_processo}.html"
         
@@ -24,7 +24,3 @@ if response.status_code == 200:
 else:
     print("Erro ao consultar o processo ou API não respondeu corretamente.")
 
-
-# 07161081420218070016
-
-# 07436788320228070001
