@@ -1,0 +1,20 @@
+# Requisitos principais do projeto
+fastapi==0.111.0
+uvicorn[standard]
+playwright==1.52.0
+beautifulsoup4==4.13.4
+pydantic==2.7.1
+pydantic-core==2.18.2
+anyio==4.9.0
+typing_extensions==4.13.2
+greenlet==3.2.2
+soupsieve==2.7
+
+# Se for usar o scheduler do Estagiário
+APScheduler==3.11.0
+tzdata==2025.2
+tzlocal==5.3.1
+
+# Se for ativar futuramente o bot Telegram do Estagiário
+python-telegram-bot==22.0
+pyee==13.0.0
